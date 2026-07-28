@@ -1,6 +1,10 @@
+import dotenv from "dotenv";
+dotenv.config({});
 import express, { urlencoded } from "express"
 import cors from "cors"
 import cookieParser from "cookie-parser"
+import { connect } from "mongoose";
+import connectDb from "./utils/database.js";
 
 const app = express();
 
@@ -23,9 +27,10 @@ const corsOption = {
 app.use(cors(corsOption));
 
 
-const PORT = 8000;
+const PORT = process.env.PORT || 5000;
 
 app.listen(PORT, () => {
+    connectDb()
     console.log("App is listening from port ", PORT);
 })
 
