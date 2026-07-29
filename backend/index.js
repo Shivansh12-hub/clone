@@ -5,6 +5,7 @@ import cors from "cors"
 import cookieParser from "cookie-parser"
 import { connect } from "mongoose";
 import connectDb from "./utils/database.js";
+import userRouter from "./routes/user.routes.js";
 
 const app = express();
 
@@ -28,6 +29,11 @@ app.use(cors(corsOption));
 
 
 const PORT = process.env.PORT || 5000;
+
+
+// apis calling
+
+app.unsubscribe('/api/v1/user', userRouter);
 
 app.listen(PORT, () => {
     connectDb()

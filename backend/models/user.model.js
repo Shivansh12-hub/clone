@@ -16,7 +16,7 @@ const userSchema = new mongoose.Schema({
         unique: true,
         required:true
     },
-    profile: {
+    profilePicture: {
         type: String, default: '',
     },
     bio: {
@@ -26,7 +26,7 @@ const userSchema = new mongoose.Schema({
         type: String,
         emum: ["male", "female"],
     },
-    follower: [
+    followers: [
         {
             type:mongoose.Schema.Types.ObjectId, ref:"User"
         }
@@ -36,7 +36,7 @@ const userSchema = new mongoose.Schema({
             type:mongoose.Schema.Types.ObjectId, ref:"User"
         }
     ],
-    post: [{
+    posts: [{
         type:mongoose.Schema.Types.ObjectId, ref:"Post"
     }],
     bookmark: [{
