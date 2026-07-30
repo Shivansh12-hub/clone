@@ -183,7 +183,7 @@ export const getSuggestedUser = async (req, res) => {
       });
     }
 
-    return res.status(200).josn({
+    return res.status(200).json({
       success: true,
       users: suggestedUser,
     });
@@ -198,77 +198,61 @@ export const getSuggestedUser = async (req, res) => {
 };
 
 export const followOrUnfollow = async (req, res) => {
-  try {
-    const userFollowKarneVala = req.id;
-    const userJiskoFollowKia = req.params.id;
-    if (userFollowKarneVala === userJiskoFollowKia) {
-      return res.status(401).json({
-        message: "Cant follow yourself",
-        success: false,
-      });
+    try {
+        const userFollowKarneVala = req.id; 
+        const userJiskoFollowKia = req.params.id;
+
+        // 1. Self-Follow Check
+        if (userFollowKarneVala === userJiskoFollowKia) {
+            return res.status(400).json({
+                message: "You cannot follow or unfollow yourself",
+                success: false
+            });
+        }
+
+        // 2. Database Fetch
+        const user = await User.findById(userFollowKarneVala);
+        const targetUser = await User.findById(userJiskoFollowKia);
+
+        // 3. Null Checks
+        if (!user || !targetUser) {
+            return res.status(404).json({
+                message: "User not found",
+                success: false
+            });
+        }
+
+        // 4. Logic Execution
+        const isFollowing = user.following.includes(userJiskoFollowKia);
+
+        if (isFollowing) {
+            // Unfollow logic
+            await Promise.all([
+                User.updateOne({ _id: userFollowKarneVala }, { $pull: { following: userJiskoFollowKia } }),
+                User.updateOne({ _id: userJiskoFollowKia }, { $pull: { followers: userFollowKarneVala } }),
+            ]);
+
+            return res.status(200).json({
+                message: "Unfollowed successfully",
+                success: true,
+            });
+        } else {
+            // Follow logic
+            await Promise.all([
+                User.updateOne({ _id: userFollowKarneVala }, { $addToSet: { following: userJiskoFollowKia } }),
+                User.updateOne({ _id: userJiskoFollowKia }, { $addToSet: { followers: userFollowKarneVala } }),
+            ]);
+
+            return res.status(200).json({
+                message: "Followed successfully",
+                success: true,
+            });
+        }
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
     }
-
-    const user = await user.findById(userFollowKarneVala);
-    const targetUser = await user.findById(userJiskoFollowKia);
-
-    if (!user) {
-      return res.status(401).josn({
-        messaeg: "User not found or session expired",
-
-        success: false,
-      });
-    }
-
-    if (!targetUser) {
-      return res.status(401).josn({
-        messaeg: "User not found.",
-        success: false,
-      });
-    }
-
-    const checkFollowing = user.following.includes(userJiskoFollowKia); // it will return ki ye jisko follow karna h vo already exist karta hai kya agar ha toh to unfollow ka logic agar nhi toh follow ka
-
-    if (checkFollowing) {
-      // unfollow logic
-      await Promise.all([
-        user.updateOne(
-          { _id: userFollowKarneVala },
-          { $push: { following: userJiskoFollowKia } },
-        ),
-        targetUser.updateOne(
-          { _id: userJiskoFollowKia },
-          { $push: { followers: userFollowKarneVala } },
-        ),
-      ]);
-
-      return res.status(200).josn({
-        message: "Unfollow successfully",
-        success: true,
-      });
-    } else {
-      // follow logic
-      await Promise.all([
-        user.updateOne(
-          { _id: userFollowKarneVala },
-          { $push: { following: userJiskoFollowKia } },
-        ),
-        targetUser.updateOne(
-          { _id: userJiskoFollowKia },
-          { $push: { followers: userFollowKarneVala } },
-        ),
-      ]);
-
-      return res.status(200).josn({
-        message: "Follow successFully",
-        success: true,
-      });
-    }
-  } catch (error) {
-    console.error(error);
-
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
 };
