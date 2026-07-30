@@ -7,10 +7,10 @@ import {
     login,
     logout,
     register
-} from "../controllers/user.controller";
+} from "../controllers/user.controller.js";
 
-import isAuthenticated from "../middleware/isAuthenticated";
-import upload from "../middleware/multer";
+import isAuthenticated from "../middleware/isAuthenticated.js";
+import upload from "../middleware/multer.js";
 
 const router = Router();
 

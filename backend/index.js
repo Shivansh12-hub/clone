@@ -33,7 +33,7 @@ const PORT = process.env.PORT || 5000;
 
 // apis calling
 
-app.unsubscribe('/api/v1/user', userRouter);
+app.use('/api/v1/user', userRouter);
 
 app.listen(PORT, () => {
     connectDb()
