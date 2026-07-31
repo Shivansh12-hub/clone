@@ -3,11 +3,12 @@ import { Router } from "express";
 
 import isAuthenticated from "../middleware/isAuthenticated.js";
 import upload from "../middleware/multer.js";
+import { getMessage, sendMessage } from "../controllers/message.controller.js";
 
 const router = Router();
 
-
-router.route
+router.route('/send/:id').post(isAuthenticated, sendMessage);
+router.route('/all/:id').get(isAuthenticated, getMessage)
 
 
 
