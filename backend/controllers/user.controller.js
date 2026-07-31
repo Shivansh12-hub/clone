@@ -138,12 +138,16 @@ export const getProfile = async (req, res) => {
   } catch (error) {
     console.error(error);
 
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
+      return res.status(500).json({
+          success: false,
+          message: error.message,
+      });
   }
-};export const editProfile = async (req, res) => {
+};
+
+
+
+export const editProfile = async (req, res) => {
   try {
     const profilePicture = req.file;
 
@@ -256,3 +260,4 @@ export const followOrUnfollow = async (req, res) => {
         });
     }
 };
+
