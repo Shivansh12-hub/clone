@@ -237,3 +237,130 @@ export const addComment = async (req, res) => {
         });
     }
 }
+
+export const getCommentsOfPost = async (req, res) => {
+    try {
+        const postId = req.params.id;
+
+        const comments = await Comment.find({ post: postId }).populate({ path: 'author', select: 'userName, profilePicture' });
+        
+        if (!comments) {
+            return res.status(201).json({
+                message: "No comments found for this post",
+                success: false
+            });
+        }
+       
+        return res.status(200).json({
+            success: true,
+            message: "SuccessFully fetched comments",
+            comments
+        });
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+}
+
+
+export const deletePost = async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const authorId = req.id;
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(401), json({
+                message: "Post not found ",
+                success: false   
+            })
+        }
+
+        // check if post owner is the logged-in user
+
+        const postOwner = post.author.toString();
+        if (postOwner != authorId) {
+            return res.status(401).json({
+                message: "Can't delete others post",
+                success: false
+            });
+        }
+
+        // delete post
+        await Post.findByIdAndDelete(postId);
+
+        // pull post for userSchema
+
+        let user = await User.findById(authorId);
+        user.posts = user.posts.filter(id => id.toString() != postId);
+        await user.save();
+
+
+        // deleting associated comments
+        await Comment.deleteMany({ post: postId });
+
+        return res.status(200).json({
+            messaeg: "Post Deleted",
+            success:true,
+        })
+
+
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+}
+
+export const bookMarkPost = async (req, res) => {
+    try {
+        const postId = req.params.id;
+        const authorId = req.id;
+
+        const post = await Post.findById(postId);
+        if (!post) {
+            return res.status(401).json({
+                message: "Post not found",
+                success:false
+            })
+        }
+        const user = await User.findById(authorId);
+        if (user.bookmarks.includes(post._id)) {
+            // already book-marked, removing bookmark
+
+            await user.updateOne({ $pull: { bookmarks: postId } });
+            await user.save();
+
+            return res.status(200).json({
+                type:"unsaved",
+                message: "Post removed from book mark successfully",
+                success:true
+            })
+        }
+        else {
+            // bookmarking the post
+
+            await user.updataOne({ $addToSet: { bookmarks: postId } });
+            await user.save();
+
+            return res.status(200).json({
+                type:"saved",
+                message: "SuccessFully book marked",
+                success:true
+            })
+        }
+
+        
+    } catch (error) {
+        console.log(error);
+        return res.status(500).json({
+            success: false,
+            message: error.message,
+        });
+    }
+}
