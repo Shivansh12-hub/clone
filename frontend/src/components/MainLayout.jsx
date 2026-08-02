@@ -1,9 +1,10 @@
 import React from 'react'
+import LeftSideBar from './LeftSideBar'
 
 const MainLayout = () => {
   return (
     <div>
-      sidebar
+      <LeftSideBar/>
     </div>
   )
 }
