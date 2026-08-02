@@ -7,94 +7,81 @@ import { toast } from "sonner";
 import { Link, useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
 
-const Signup = () => {
+const Login = () => {
   const [input, setInput] = useState({
-    userName: "",
     email: "",
     password: "",
   });
 
-  const [loading, setLoading] = useState(false);
-  const navigate = useNavigate();
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
 
   const changeEventHandler = (e) => {
-    setInput({ ...input, [e.target.name]: e.target.value });
+    setInput((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
   };
 
-  const signuHandler = async (e) => {
+  const loginHandler = async (e) => {
     e.preventDefault();
-    // console.log(input);
 
     try {
       setLoading(true);
+
       const res = await axios.post(
-        "http://localhost:8000/api/v1/user/register",
+        "http://localhost:8000/api/v1/user/login",
         input,
         {
           headers: {
             "Content-Type": "application/json",
           },
           withCredentials: true,
-        },
+        }
       );
-      if (res.data.success) {
-        navigate('/login')
+
+        if (res.data.success) {
+          
+            navigate('/');
         toast.success(res.data.message);
-        console.log(res.data);
+          console.log(res.data);
+
         setInput({
-          userName: "",
           email: "",
           password: "",
         });
       }
+
     } catch (error) {
       console.log(error);
-      toast.error(error.response?.data?.message);
+
+      toast.error(
+        error.response?.data?.message || "Login failed"
+      );
+
     } finally {
       setLoading(false);
     }
   };
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-zinc-50 px-4">
+
       <form
-        onSubmit={signuHandler}
+        onSubmit={loginHandler}
         className="flex w-full max-w-md flex-col gap-5 rounded-xl border bg-white p-8 shadow-lg"
       >
-        {/* Header */}
+
         <div className="mb-2 flex flex-col items-center gap-2">
           <h1 className="text-2xl font-bold">Logo</h1>
 
           <p className="max-w-xs text-center text-sm text-zinc-500">
-            Sign up to see photos and videos from your friends and family.
+            Log in to see photos and videos from your friends and family.
           </p>
         </div>
 
-        {/* Username */}
         <div className="space-y-2">
-          <Label
-            htmlFor="userName"
-            className="text-sm font-semibold text-zinc-800"
-          >
-            UserName
-          </Label>
-
-          <Input
-            id="userName"
-            name="userName"
-            type="text"
-            value={input.userName}
-            onChange={changeEventHandler}
-            placeholder="Enter userName"
-            className="h-11 rounded-lg"
-          />
-        </div>
-
-        {/* Email */}
-        <div className="space-y-2">
-          <Label
-            htmlFor="email"
-            className="text-sm font-semibold text-zinc-800"
-          >
+          <Label htmlFor="email">
             Email
           </Label>
 
@@ -109,12 +96,8 @@ const Signup = () => {
           />
         </div>
 
-        {/* Password */}
         <div className="space-y-2">
-          <Label
-            htmlFor="password"
-            className="text-sm font-semibold text-zinc-800"
-          >
+          <Label htmlFor="password">
             Password
           </Label>
 
@@ -129,8 +112,7 @@ const Signup = () => {
           />
         </div>
 
-        {/* Submit */}
-        {loading ? 
+              {loading ? 
                   (
                       <Button>
                           <Loader className="mr-2 h-4 w-4 animate-spin" />
@@ -139,19 +121,19 @@ const Signup = () => {
                   )
                   : (
                       <Button type="submit" className="mt-2 h-11 w-full">
-                                Signup
+                                Login
                               </Button>
                       )
             }
 
-        {/* Login */}
         <p className="text-center text-sm text-zinc-500">
-          Already have an account?{" "}
-          <Link className="text-blue-600" to='/login'>Login</Link>
+          Don't have an account?{" "}
+          <Link className="text-blue-600" to='/signup'>Signup</Link>
         </p>
+
       </form>
     </div>
   );
 };
 
-export default Signup;
+export default Login;
