@@ -2,10 +2,12 @@ import React,{useState} from "react"
 import { Label } from "./ui/label"
 import { Input } from "./ui/input"
 import { Button } from "./ui/button"
+import axios from "axios"
+import { toast } from "sonner"
 
 const Signup = () => {
     const [input, setInput] = useState({
-        username: "",
+        userName: "",
         email: "",
         password: ""
     });
@@ -14,13 +16,23 @@ const Signup = () => {
         setInput({ ...input, [e.target.name]: e.target.value });
     }
 
-    const signuHandler = (e) => {
+    const signuHandler = async (e) => {
         e.preventDefault();
-            console.log(input);
+        // console.log(input);
+        
         try {
-            const res = await 
+            const res = await axios.post('http://localhost:8000/api/v1/user/register', input, {
+                headers: {
+                    'Content-Type':'application/json'
+                },
+                withCredentials:true
+            });
+            if (res.data.success) {
+                toast.success(res.data.message)
+            }
         } catch (error) {
-            
+            console.log(error);
+            toast.error(error.response?.data?.message);
         }
     }
   return (
@@ -42,19 +54,19 @@ const Signup = () => {
         {/* Username */}
         <div className="space-y-2">
           <Label
-            htmlFor="username"
+            htmlFor="userName"
             className="text-sm font-semibold text-zinc-800"
           >
-            Username
+            UserName
           </Label>
 
           <Input
-            id="username"
-            name="username"
+            id="userName"
+            name="userName"
                       type="text"
-                      value={input.username}
+                      value={input.userName}
                       onChange={changeEventHandler}
-            placeholder="Enter username"
+            placeholder="Enter userName"
             className="h-11 rounded-lg"
           />
         </div>
@@ -71,7 +83,8 @@ const Signup = () => {
           <Input
             id="email"
             name="email"
-                      type="email"
+            type="email"
+            value={input.email}
                        onChange={changeEventHandler}
             placeholder="Enter email"
             className="h-11 rounded-lg"
@@ -90,7 +103,8 @@ const Signup = () => {
           <Input
             id="password"
             name="password"
-                      type="password"
+            type="password"
+            value={input.password}
                        onChange={changeEventHandler}
             placeholder="Enter password"
             className="h-11 rounded-lg"

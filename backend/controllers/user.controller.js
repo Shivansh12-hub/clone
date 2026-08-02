@@ -78,7 +78,7 @@ export const login = async (req, res) => {
     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
         expiresIn: "2d",
     });
-      const populatedPost = Promise.all(
+      const populatedPost =await Promise.all(
           user.posts.map(async (postId) => {
               const post = await Post.findById(postId);
               if (post.auther.equals(user._id)) {
@@ -193,7 +193,7 @@ export const getSuggestedUser = async (req, res) => {
     );
 
     if (!suggestedUser) {
-      return res.status(400).josn({
+      return res.status(400).json({
         messaage: "Current there no other present",
         success: false,
       });
