@@ -1,10 +1,12 @@
 import React from 'react'
 import LeftSideBar from './LeftSideBar'
+import Home from './Home'
 
 const MainLayout = () => {
   return (
     <div>
-      <LeftSideBar/>
+      <LeftSideBar />
+      <Home/>
     </div>
   )
 }
