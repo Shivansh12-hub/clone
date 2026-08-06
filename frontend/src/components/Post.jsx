@@ -14,6 +14,7 @@ import CommentDialog from "./CommentDialog";
 const Post = () => {
 
     const [text, setText] = useState("");
+    const [open, setOpen] = useState(false);
     const changeEventHandler = (e) => {
         e.preventDefault();
         const inputText = e.target.value;
@@ -115,7 +116,8 @@ const Post = () => {
           />
 
           <MessageCircle
-            size={24}
+                      size={24}
+                      onClick={()=>setOpen(true)}
             className="cursor-pointer transition hover:text-gray-500"
           />
 
@@ -158,12 +160,13 @@ const Post = () => {
       {/* ================= COMMENTS ================= */}
 
       <button
-        type="button"
-        className="mt-1 text-sm text-gray-500 hover:text-gray-700"
+              type="button"
+              className="mt-1 text-sm text-gray-500 hover:text-gray-700 cursor-pointer"
+              onClick={() => setOpen(true)}
       >
         View all 24 comments
           </button>
-          <CommentDialog />
+          <CommentDialog open={open} setOpen = {setOpen} />
           <div className="flex items-center justify-between">
               <input
               type='text'
